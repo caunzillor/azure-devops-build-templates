@@ -19,7 +19,7 @@ jobs:
       WORKDIR /app
       COPY --from=build-env /build/out ./
       EXPOSE 80
-      ENTRYPOINT ["dotnet", "${{ parameters.serviceName}}"]
+      ENTRYPOINT ["dotnet", "${{ parameters.serviceName}}.dll"]
       EOF
   - script: cat Dockerfile
   - script: docker build -f Dockerfile -t ${{ parameters.imageName }} .
