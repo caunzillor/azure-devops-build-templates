@@ -1,0 +1,25 @@
+# Repo: Contoso/BuildTemplates
+# File: common.yml
+parameters:
+  vmImage: 'ubuntu 16.04'
+
+jobs:
+- job: Build
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  - bash: |
+      cat > Dockerfile << EOF
+      FROM microsoft/dotnet:2.2.100-sdk as build-env
+      WORKDIR /build
+      COPY . ./
+      RUN dotnet restore ${{ parameters.serviceName }}.csproj
+      RUN dotnet publish -c Release -o out ${{ parameters.serviceName }}.csproj
+      FROM microsoft/dotnet:2.2.0-aspnetcore-runtime
+      WORKDIR /app
+      COPY --from=build-env /build/out ./
+      EXPOSE 80
+      ENTRYPOINT ["dotnet", "${{ parameters.serviceName}}"]
+      EOF
+  - script: cat Dockerfile
+  - script: docker build -f Dockerfile -t ${{ parameters.imageName }} .
