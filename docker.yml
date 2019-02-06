@@ -21,5 +21,26 @@ jobs:
       EXPOSE 80
       ENTRYPOINT ["dotnet", "${{ parameters.serviceName}}.dll"]
       EOF
-  - script: cat Dockerfile
-  - script: docker build -f Dockerfile -t ${{ parameters.imageName }} .
+#  - script: cat Dockerfile
+#  - script: docker build -f Dockerfile -t ${{ parameters.imageName }} .
+  - task: Docker@1
+    displayName: Build image
+    inputs:
+      command: build
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: schmidtjohannes-docker-hub
+      dockerFile: Dockerfile
+      imageName: ${{ parameters.imageName }}
+  - task: Docker@1
+    displayName: Container registry login
+    inputs:
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: schmidtjohannes-docker-hub
+      command: login
+  - task: Docker@1
+    displayName: Push image
+    inputs:
+      command: push
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: schmidtjohannes-docker-hub
+      imageName: $(imageName)
