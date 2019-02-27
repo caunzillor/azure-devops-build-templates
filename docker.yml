@@ -28,19 +28,19 @@ jobs:
     inputs:
       command: build
       containerregistrytype: Container Registry
-      dockerRegistryEndpoint: schmidtjohannes-docker-hub
+      dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
       dockerFile: Dockerfile
       imageName: ${{ parameters.imageName }}
   - task: Docker@1
     displayName: Container registry login
     inputs:
       containerregistrytype: Container Registry
-      dockerRegistryEndpoint: schmidtjohannes-docker-hub
+      dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
       command: login
   - task: Docker@1
     displayName: Push image
     inputs:
       command: push
       containerregistrytype: Container Registry
-      dockerRegistryEndpoint: schmidtjohannes-docker-hub
+      dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
       imageName: $(imageName)
