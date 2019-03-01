@@ -42,7 +42,7 @@ jobs:
     vmImage: ${{ parameters.vmImage }}
   steps:
   - bash: |
-      cat > service.yaml << EOF
+      cat > deployment.yaml << EOF
       apiVersion: apps/v1
       kind: Deployment
       metadata:
@@ -64,6 +64,8 @@ jobs:
               image: ${{ parameters.imageName }}
               ports:
               - containerPort: 80
+  - bash: |
+      cat > service.yaml << EOF
       kind: Service
       apiVersion: v1
       metadata:
@@ -77,7 +79,14 @@ jobs:
           targetPort: 80
       EOF
   - task: Kubernetes@1
-    displayName: kubectl apply
+    displayName: kubectl apply deployment.yaml
+    inputs:
+      connectionType: Kubernetes Service Connection
+      kubernetesServiceEndpoint: prod-kubernetes-slave-haproxy
+      command: apply
+      arguments: -f deployment.yaml
+  - task: Kubernetes@1
+    displayName: kubectl apply service.yaml
     inputs:
       connectionType: Kubernetes Service Connection
       kubernetesServiceEndpoint: prod-kubernetes-slave-haproxy
