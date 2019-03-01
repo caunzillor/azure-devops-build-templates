@@ -41,8 +41,46 @@ jobs:
   pool:
     vmImage: ${{ parameters.vmImage }}
   steps:
+  - bash: |
+      cat > service.yaml << EOF
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: ${{ parameters.imageName }}-deployment
+        labels:
+          app: ${{ parameters.imageName }}
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: ${{ parameters.imageName }}
+        template:
+          metadata:
+            labels:
+              app: ${{ parameters.imageName }}
+          spec:
+            containers:
+            - name: ${{ parameters.imageName }}
+              image: ${{ parameters.imageName }}
+              ports:
+              - containerPort: 80
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: ${{ parameters.imageName }}-service
+      spec:
+        selector:
+          app: ${{ parameters.imageName }}
+        type: NodePort
+        ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 80
+      EOF
   - task: Kubernetes@1
     displayName: kubectl apply
     inputs:
       connectionType: Kubernetes Service Connection
       kubernetesServiceEndpoint: prod-kubernetes-slave-haproxy
+      command: apply
+      arguments: -f service.yaml
