@@ -64,6 +64,7 @@ jobs:
               image: ${{ parameters.imageName }}
               ports:
               - containerPort: 80
+      EOF
   - bash: |
       cat > service.yaml << EOF
       kind: Service
