@@ -46,32 +46,31 @@ jobs:
       apiVersion: apps/v1
       kind: Deployment
       metadata:
-        name: ${{ parameters.imageName }}-deployment
+        name: ${{ parameters.serviceName }}-deployment
         labels:
-          app: ${{ parameters.imageName }}
+          app: ${{ parameters.serviceName }}
       spec:
         replicas: 1
         selector:
           matchLabels:
-            app: ${{ parameters.imageName }}
+            app: ${{ parameters.serviceName }}
         template:
           metadata:
             labels:
-              app: ${{ parameters.imageName }}
+              app: ${{ parameters.serviceName }}
           spec:
             containers:
-            - name: ${{ parameters.imageName }}
+            - name: ${{ parameters.serviceName }}
               image: ${{ parameters.imageName }}
               ports:
               - containerPort: 80
       kind: Service
       apiVersion: v1
       metadata:
-        name: ${{ parameters.imageName }}-service
+        name: ${{ parameters.serviceName }}-service
       spec:
         selector:
-          app: ${{ parameters.imageName }}
-        type: NodePort
+          app: ${{ parameters.serviceName }}
         ports:
         - protocol: TCP
           port: 80
