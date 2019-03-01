@@ -37,10 +37,12 @@ jobs:
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
       command: login
-  - task: Docker@1
-    displayName: Push image
+- job: Deploy
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  - task: Kubernetes@1
+    displayName: kubectl apply
     inputs:
-      command: push
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
-      imageName: $(imageName)
+      connectionType: Kubernetes Service Connection
+      kubernetesServiceEndpoint: prod-kubernetes-slave-haproxy
