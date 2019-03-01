@@ -21,8 +21,6 @@ jobs:
       EXPOSE 80
       ENTRYPOINT ["dotnet", "${{ parameters.serviceName}}.dll"]
       EOF
-#  - script: cat Dockerfile
-#  - script: docker build -f Dockerfile -t ${{ parameters.imageName }} .
   - task: Docker@1
     displayName: Build image
     inputs:
@@ -37,6 +35,11 @@ jobs:
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
       command: login
+    inputs:
+      command: push
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: docker-registry.grenzebach.edns.biz
+      imageName: ${{ parameters.imageName }}
 - job: Deploy
   pool:
     vmImage: ${{ parameters.vmImage }}
